@@ -2,28 +2,32 @@ const express = require('express');
 
 const router = express.Router();
 const userDb = require('../users/userDb.js');
-const psotDb = require('../posts/postDb.js')
+const postDb = require('../posts/postDb.js')
 
 router.post('/', validateUser, (req, res) => {
+    const user = req.body;
     userDb
-    .insert(req.body)
-    .then(res => {
-        console.log('inside of then ' + res);
-        res.status(200).json(res)
+    .insert(user)
+    .then(user => {
+        console.log('inside of then ' + user);
+        res.status(201).json(user)
     })
     .catch(error => {
+        console.log(req.body)
         res.status(500).json({ message: 'error'})
     })
 });
 
-router.post('/:id/posts', validateUserId, (req, res) => {
-    userDb
-    .insert(req.body)
-    .then(res => {
-
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+    const post = req.body
+    postDb
+    .insert(post)
+    .then(post => {
+        console.log(post)
+        res.status(201).json(post)
     })
     .catch(error => {
-
+        res.status(500).json({ message: 'internal server error'})
     })
 });
 //working
@@ -49,11 +53,12 @@ router.get('/:id/posts', validateUserId, (req, res) => {
 });
 //working and deleting but saying internal server error
 router.delete('/:id', validateUserId, (req, res) => {
+    const id = req.params.id;
    userDb
-   .remove(req.params.id)
-   .then(res => {
-    console.log(res)
-    res.status(200).json({message: 'user has been removed'})
+   .remove(id)
+   .then(id => {
+    console.log(id)
+    res.status(200).json({message: 'we removed the user'})
    })
    .catch(error => res.status(500).json({ message: 'internal server error'}))
 });

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const userDb = require('../users/userDb.js');
 const postDb = require('../posts/postDb.js')
-
+//working
 router.post('/', validateUser, (req, res) => {
     const user = req.body;
     userDb
@@ -51,7 +51,7 @@ router.get('/:id/posts', validateUserId, (req, res) => {
     .then(posts => res.status(200).json(posts))
     .catch(error => res.status(500).json({ message: 'internal server error'}))
 });
-//working and deleting but saying internal server error
+//working
 router.delete('/:id', validateUserId, (req, res) => {
     const id = req.params.id;
    userDb

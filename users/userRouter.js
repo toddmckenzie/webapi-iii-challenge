@@ -3,12 +3,13 @@ const express = require('express');
 const router = express.Router();
 const userDb = require('../users/userDb.js');
 const psotDb = require('../posts/postDb.js')
-//working
+
 router.post('/', validateUser, (req, res) => {
     userDb
     .insert(req.body)
     .then(res => {
-        console.log('inside of then ' + res)
+        console.log('inside of then ' + res);
+        res.status(200).json(res)
     })
     .catch(error => {
         res.status(500).json({ message: 'error'})
@@ -30,40 +31,38 @@ router.get('/', (req, res) => {
     userDb
     .get()
     .then(resources => res.status(200).json(resources))
-    .catch(error => res.status(500).json({ message: ''}))
+    .catch(error => res.status(500).json({ message: 'internal server error'}))
 });
 //working
 router.get('/:id', validateUserId, (req, res) => {
     userDb
-    .getUserPosts(req.params.id)
+    .getById(req.params.id)
     .then(posts => res.status(200).json(posts))
-    .catch(error => res.status(404).json({ message: 'users posts not found.'}))
+    .catch(error => res.status(500).json({ message: 'internal server error'}))
 });
-//notworking
+//working
 router.get('/:id/posts', validateUserId, (req, res) => {
     userDb
-    .getUserPosts(req.user)
+    .getUserPosts(req.params.id)
     .then(posts => res.status(200).json(posts))
-    .catch(error => res.status(404).json({ message: 'Not Found'}))
+    .catch(error => res.status(500).json({ message: 'internal server error'}))
 });
-//working but saying its not.
+//working and deleting but saying internal server error
 router.delete('/:id', validateUserId, (req, res) => {
-   // userDb
    userDb
    .remove(req.params.id)
    .then(res => {
     console.log(res)
-    res.status(200).json({message: 'user has been remove'})
+    res.status(200).json({message: 'user has been removed'})
    })
-   .catch(error => res.status(404).json({ message: 'there has been an error removing user.'}))
+   .catch(error => res.status(500).json({ message: 'internal server error'}))
 });
-
-router.put('/:id', validateUserId, validatePost, (req, res) => {
-   // userDb
+//working
+router.put('/:id', validateUserId, validateUser, (req, res) => {
    userDb
-   .update(req.id, req.body)
-   .then(res => res.status(200).json(res))
-   .catch(error => res.status(400).json({ message: 'There has been an error updating.'}))
+   .update(req.params.id, req.body)
+   .then(count => res.status(200).json(count))
+   .catch(error => res.status(500).json({ message: 'There has been an error updating.'}))
 });
 
 //custom middleware
@@ -115,6 +114,7 @@ function validatePost(req, res, next) {
   } else if (!req.body.text) {
     res.status(400).json({ message: 'missing required text field'})
   } else {
+    console.log(req.body)
     next();
   }
 };

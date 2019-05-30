@@ -30,6 +30,7 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
         res.status(500).json({ message: 'internal server error'})
     })
 });
+
 //working
 router.get('/', (req, res) => {
     userDb
